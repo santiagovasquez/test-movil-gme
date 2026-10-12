@@ -56,6 +56,12 @@ Cada parte tiene su spec en `specs/` y la estructura está en `docs/arquitectura
   comparten.
 - **Navegación:** React Navigation (native-stack), que maneja el botón atrás de
   Android y funciona en Expo Go.
+- **Mapa:** el detalle muestra la posición en vivo sobre OpenStreetMap con
+  Leaflet, dentro de un WebView. Se probó primero `react-native-maps`, pero la
+  API key de Google Maps que trae Expo Go no está autorizada ("Authorization
+  failure" en el log) y el mapa quedaba en blanco. Con Leaflet funciona en
+  Expo Go sin key: el marcador gira según el rumbo y deja la estela del
+  recorrido. Necesita internet para las teselas.
 - **Marcar como leída:** la alerta cambia al instante. Si el servidor falla,
   vuelve a "sin leer" y aparece un aviso; si responde `404`, se retira.
 
@@ -82,7 +88,6 @@ La lógica está en `app/src/lib`, sin React, y tiene pruebas con Vitest.
 
 ## 4. Con más tiempo
 
-- Mapa del vehículo con `react-native-maps`.
 - Pruebas de los hooks con React Native Testing Library.
 - Si una consulta de alertas sale antes de marcar una como leída y llega
   después de la confirmación, la alerta se ve sin leer hasta la siguiente
@@ -95,6 +100,10 @@ La lógica está en `app/src/lib`, sin React, y tiene pruebas con Vitest.
   evitarlo sola porque el token es de un solo uso. Lo resolvería en el
   servidor, aceptando el token anterior durante unos segundos tras rotarlo.
 - La página web opcional reutilizando `app/src/lib`.
+- Mejorar el diseño pensando en la usabilidad para el supervisor.
+- Probar en más dispositivos reales, usando la app en vertical y en horizontal.
+- Medir el rendimiento de las pantallas (tiempos de carga, renders lentos,
+  validaciones) para detectar anomalías.
 
 ## 5. Uso de IA
 
@@ -111,6 +120,10 @@ La lógica está en `app/src/lib`, sin React, y tiene pruebas con Vitest.
     cumplir su propia decisión D3, descartar la respuesta después de `stop()`
     sin avanzar el cursor, porque el cursor vive dentro de la tarea. Se
     detectó al implementar y se cambió a `task(isCurrent)`.
+  - Recomendó `react-native-maps` para el mapa asegurando que en Expo Go
+    funcionaba sin configurar nada. En el teléfono el mapa quedó en blanco; el
+    log de Android mostraba "Authorization failure" de Google Maps. Se cambió
+    a Leaflet con OpenStreetMap en un WebView.
   - Una prueba con timers falsos usaba `advanceTimersByTimeAsync(0)`, que no
     ejecuta los `setTimeout(0)` encadenados. La prueba fallaba aunque el
     código estaba bien: un recordatorio de que una prueba roja no siempre
