@@ -4,8 +4,8 @@
 
 ## Fase 1 — Posiciones repetidas o atrasadas
 Commit: `fix(posiciones): descartar posiciones repetidas o atrasadas`
-- [ ] T01 `app/src/lib/positions.ts`: `applyUpdates` compara `recordedAt` (D1); agregar `STALE_AFTER_S` e `isStale`.
-- [ ] T02 `app/src/lib/positions.test.ts`: casos nuevos de `design.md` § Pruebas.
+- [x] T01 `app/src/lib/positions.ts`: `applyUpdates` compara `recordedAt` (D1); agregar `STALE_AFTER_S` e `isStale`.
+- [x] T02 `app/src/lib/positions.test.ts`: casos nuevos de `design.md` § Pruebas.
 
 ## Fase 2 — Poller
 Commit: `feat(polling): consultar posiciones con cursor sin solapes ni pérdidas`

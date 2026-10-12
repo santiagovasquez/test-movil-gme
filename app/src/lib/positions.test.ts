@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyUpdates, secondsSince } from './positions';
+import { applyUpdates, isStale, secondsSince } from './positions';
 import { PositionUpdate } from './types';
 
 const position = (vehicleId: string, recordedAt: string, speedKmh = 30): PositionUpdate => ({
@@ -42,6 +42,41 @@ describe('applyUpdates', () => {
   it('devuelve la misma referencia si el lote viene vacío', () => {
     const current = { 'veh-01': position('veh-01', '2026-10-09T15:00:00.000Z') };
     expect(applyUpdates(current, [])).toBe(current);
+  });
+
+  it('una posición atrasada no reemplaza a la actual', () => {
+    const current = { 'veh-01': position('veh-01', '2026-10-09T15:00:10.000Z', 50) };
+    const next = applyUpdates(current, [position('veh-01', '2026-10-09T15:00:04.000Z', 5)]);
+    expect(next['veh-01'].speedKmh).toBe(50);
+    expect(next).toBe(current);
+  });
+
+  it('una posición repetida no reemplaza a la actual', () => {
+    const current = { 'veh-01': position('veh-01', '2026-10-09T15:00:10.000Z', 50) };
+    const next = applyUpdates(current, [position('veh-01', '2026-10-09T15:00:10.000Z', 50)]);
+    expect(next).toBe(current);
+  });
+
+  it('se queda con la más reciente aunque el lote venga desordenado', () => {
+    const next = applyUpdates({}, [
+      position('veh-01', '2026-10-09T15:00:06.000Z', 60),
+      position('veh-01', '2026-10-09T15:00:02.000Z', 20),
+      position('veh-01', '2026-10-09T15:00:04.000Z', 40),
+    ]);
+    expect(next['veh-01'].speedKmh).toBe(60);
+  });
+});
+
+describe('isStale', () => {
+  const recordedAt = '2026-10-09T15:00:00.000Z';
+  const at = (s: number) => new Date(recordedAt).getTime() + s * 1000;
+
+  it('no está sin señal a los 30 s', () => {
+    expect(isStale(recordedAt, at(30))).toBe(false);
+  });
+
+  it('está sin señal a los 31 s', () => {
+    expect(isStale(recordedAt, at(31))).toBe(true);
   });
 });
 
