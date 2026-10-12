@@ -58,4 +58,5 @@ useVehicleList(): { rows: VehicleRowModel[]; loading: boolean; network: 'ok' | '
 
 ## Pruebas
 - `positions.test.ts`: posición atrasada no reemplaza; repetida no reemplaza; desorden dentro del lote; `isStale` en 30 s y 31 s.
+- `fleetStore.test.ts`: aplica posiciones ignorando atrasadas; no notifica si no hay cambios; `reset`.
 - `poller.test.ts` (timers falsos): `since=0` y luego cursor; no hay solape si la consulta tarda; error conserva cursor; `reconnecting` tras 3 fallos y vuelta a `ok`; `again` repite de inmediato; `stop` descarta la respuesta en curso; `start` doble no duplica.

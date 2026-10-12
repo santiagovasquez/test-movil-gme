@@ -14,10 +14,10 @@ Commit: `feat(polling): consultar posiciones con cursor sin solapes ni pérdidas
 
 ## Fase 3 — Store y sincronización
 Commit: `feat(flota): store de flota y sincronización según el estado de la app`
-- [ ] T05 `npx expo install zustand`.
-- [ ] T06 `app/src/state/fleetStore.ts`: vehículos, posiciones, `network`, `reset()` (D8).
-- [ ] T07 `app/src/hooks/useFleetSync.ts`: carga vehículos, poller de posiciones, `AppState`.
-- [ ] T08 `app/src/hooks/useNow.ts`.
+- [x] T05 `npx expo install zustand`.
+- [x] T06 `app/src/state/fleetStore.ts`: vehículos, posiciones, `network`, `reset()` (D8).
+- [x] T07 `app/src/hooks/useFleetSync.ts`: carga vehículos, poller de posiciones, `AppState`.
+- [x] T08 `app/src/hooks/useNow.ts`.
 
 ## Fase 4 — Lista y navegación
 Commit: `feat(vehiculos): lista de vehículos en vivo`
