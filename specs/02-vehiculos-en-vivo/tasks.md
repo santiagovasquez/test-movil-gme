@@ -9,8 +9,8 @@ Commit: `fix(posiciones): descartar posiciones repetidas o atrasadas`
 
 ## Fase 2 — Poller
 Commit: `feat(polling): consultar posiciones con cursor sin solapes ni pérdidas`
-- [ ] T03 `app/src/lib/poller.ts`: `createPoller` y `createPositionsTask` (D2–D6).
-- [ ] T04 `app/src/lib/poller.test.ts`: casos de `design.md` § Pruebas con timers falsos.
+- [x] T03 `app/src/lib/poller.ts`: `createPoller` y `createPositionsTask` (D2–D6).
+- [x] T04 `app/src/lib/poller.test.ts`: casos de `design.md` § Pruebas con timers falsos.
 
 ## Fase 3 — Store y sincronización
 Commit: `feat(flota): store de flota y sincronización según el estado de la app`

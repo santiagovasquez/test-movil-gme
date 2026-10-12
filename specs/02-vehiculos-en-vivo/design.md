@@ -30,7 +30,7 @@ function isStale(recordedAt: string, now?: number): boolean;
 
 // lib/poller.ts
 function createPoller(opts: {
-  task: () => Promise<{ again: boolean }>;          // again = repetir sin esperar
+  task: (isCurrent: () => boolean) => Promise<{ again: boolean }>; // again = repetir sin esperar; isCurrent false tras stop()
   intervalMs: number;
   onStatusChange?: (s: 'ok' | 'reconnecting') => void;
   failuresBeforeWarning?: number;                   // default 3
@@ -38,7 +38,7 @@ function createPoller(opts: {
 function createPositionsTask(deps: {
   fetchPositions: (since: number) => Promise<{ cursor: number; updates: PositionUpdate[] }>;
   onUpdates: (updates: PositionUpdate[]) => void;
-}): () => Promise<{ again: boolean }>;
+}): PollTask;
 
 // hooks/useVehicleList.ts
 interface VehicleRowModel { vehicle: Vehicle; speedKmh: number | null;
