@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -9,17 +10,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { login } from '../lib/api';
-import { Session } from '../lib/types';
+import { Logo } from '../components/Logo';
+import { useSession } from '../state/SessionProvider';
 
-interface Props {
-  onLoggedIn: (session: Session) => void;
-  notice?: string;
-}
-
-export function LoginScreen({ onLoggedIn, notice }: Props) {
+export function LoginScreen() {
+  const { login, notice } = useSession();
   const [email, setEmail] = useState('supervisor@gme.co');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,10 +25,10 @@ export function LoginScreen({ onLoggedIn, notice }: Props) {
     setLoading(true);
     setError(null);
     try {
-      onLoggedIn(await login(email.trim(), password));
+      // Si el login funciona, la pantalla se desmonta: no tocar su estado (D7).
+      await login(email.trim(), password);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo iniciar sesión');
-    } finally {
       setLoading(false);
     }
   }
@@ -41,8 +39,7 @@ export function LoginScreen({ onLoggedIn, notice }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.card}>
-        <Text style={styles.title}>GME Flota</Text>
-        <Text style={styles.subtitle}>Supervisión de vehículos</Text>
+        <Logo />
 
         {notice ? <Text style={styles.notice}>{notice}</Text> : null}
 
@@ -54,14 +51,24 @@ export function LoginScreen({ onLoggedIn, notice }: Props) {
           autoCapitalize="none"
           keyboardType="email-address"
         />
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Contraseña"
-          secureTextEntry
-          onSubmitEditing={handleSubmit}
-        />
+        <View style={[styles.input, styles.passwordRow]}>
+          <TextInput
+            style={styles.passwordInput}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Contraseña"
+            secureTextEntry={!showPassword}
+            autoCapitalize="none"
+            onSubmitEditing={handleSubmit}
+          />
+          <Pressable
+            onPress={() => setShowPassword((v) => !v)}
+            hitSlop={10}
+            accessibilityLabel={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          >
+            <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#616e7c" />
+          </Pressable>
+        </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -76,8 +83,6 @@ export function LoginScreen({ onLoggedIn, notice }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#f5f7fa' },
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 24, gap: 12 },
-  title: { fontSize: 24, fontWeight: '700', color: '#1f2933' },
-  subtitle: { fontSize: 14, color: '#616e7c', marginBottom: 8 },
   notice: { backgroundColor: '#fff4e5', color: '#8a4b00', padding: 10, borderRadius: 8 },
   input: {
     borderWidth: 1,
@@ -87,6 +92,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 16,
   },
+  passwordRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 0, gap: 8 },
+  passwordInput: { flex: 1, fontSize: 16, paddingVertical: 10 },
   error: { color: '#c62828' },
   button: {
     backgroundColor: '#1b5e9c',
