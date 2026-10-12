@@ -97,12 +97,12 @@ describe('createPoller con posiciones', () => {
     let calls = 0;
     const { poller, statuses } = setup(async () => {
       calls += 1;
-      if (calls <= 3) throw new ApiError(0, 'Sin conexión');
+      if (calls >= 2 && calls <= 4) throw new ApiError(0, 'Sin conexión');
       return page(10);
     });
 
     poller.start();
-    await vi.advanceTimersByTimeAsync(INTERVAL);
+    await vi.advanceTimersByTimeAsync(INTERVAL * 2);
     expect(statuses).toEqual([]);
     await vi.advanceTimersByTimeAsync(INTERVAL);
     expect(statuses).toEqual(['reconnecting']);
@@ -110,6 +110,36 @@ describe('createPoller con posiciones', () => {
     poller.stop();
 
     expect(statuses).toEqual(['reconnecting', 'ok']);
+  });
+
+  it('poniéndose al día, un error reintenta rápido sin esperar el intervalo', async () => {
+    const responses = [
+      () => Promise.resolve(page(1, 200)),
+      () => Promise.reject(new ApiError(503, 'Servicio no disponible')),
+      () => Promise.resolve(page(2, 5)),
+    ];
+    const { poller, fetchMock } = setup(() => responses.shift()!());
+
+    poller.start();
+    await vi.advanceTimersByTimeAsync(400);
+    poller.stop();
+
+    expect(fetchMock.mock.calls.map(([since]) => since)).toEqual([0, 1, 1]);
+  });
+
+  it('sin respuesta todavía, reintenta rápido solo hasta el aviso y luego espera el intervalo', async () => {
+    const { poller, fetchMock, statuses } = setup(async () => {
+      throw new ApiError(0, 'Sin conexión');
+    });
+
+    poller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(statuses).toEqual(['reconnecting']);
+
+    await vi.advanceTimersByTimeAsync(INTERVAL);
+    poller.stop();
+    expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
   it('con un lote de 200 consulta de inmediato', async () => {
@@ -121,7 +151,8 @@ describe('createPoller con posiciones', () => {
     poller.stop();
 
     expect(fetchMock.mock.calls.map(([since]) => since)).toEqual([0, 1, 2]);
-    expect(onUpdates).toHaveBeenCalledTimes(3);
+    // Solo el último lote (incompleto) indica que ya está al día.
+    expect(onUpdates.mock.calls.map(([, caughtUp]) => caughtUp)).toEqual([false, false, true]);
   });
 
   it('stop descarta la respuesta en curso sin avanzar el cursor', async () => {

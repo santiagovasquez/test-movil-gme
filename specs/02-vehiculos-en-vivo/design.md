@@ -52,6 +52,7 @@ useVehicleList(): { rows: VehicleRowModel[]; loading: boolean; network: 'ok' | '
 - **D3**: `stop()` cancela el temporizador e invalida la consulta en curso con un contador de generación; su resultado se descarta sin avanzar el cursor — *por qué*: al volver del segundo plano no quedan ciclos duplicados ni se pierden posiciones.
 - **D4**: Un error mantiene el cursor y reintenta al siguiente intervalo; tras 3 fallos seguidos el estado pasa a `reconnecting` — *por qué*: el `503` del 5 % es normal y no debe mostrarse.
 - **D5**: Si llegan 200 posiciones (`again: true`) se consulta de inmediato — *por qué*: tras un rato en segundo plano el atraso se recupera rápido.
+- **D5b**: Mientras se pone al día (sin respuesta aún o último lote lleno), un error reintenta a los 300 ms hasta el aviso de 3 fallos — *por qué*: con decenas de lotes, cada `503` costaba 3 s y la carga inicial tardaba más de 10 s.
 - **D6**: `SessionExpiredError` detiene el poller — *por qué*: la sesión ya terminó y `SessionProvider` lleva al login.
 - **D7**: Un solo reloj (`useNow`) en `useVehicleList` calcula `secondsAgo` de todas las filas — *por qué*: un intervalo por fila es innecesario.
 - **D8**: El store se crea con `zustand/vanilla` y se lee con `useStore` — *por qué*: se prueba sin React y se limpia con `reset()` al cerrar sesión.

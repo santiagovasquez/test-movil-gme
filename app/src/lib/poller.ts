@@ -17,6 +17,8 @@ interface PollerOptions {
   intervalMs: number;
   onStatusChange?: (status: NetworkStatus) => void;
   failuresBeforeWarning?: number;
+  /** Espera tras un error mientras se pone al día (antes del aviso). */
+  catchUpRetryMs?: number;
 }
 
 /**
@@ -28,6 +30,7 @@ export function createPoller({
   intervalMs,
   onStatusChange,
   failuresBeforeWarning = 3,
+  catchUpRetryMs = 300,
 }: PollerOptions) {
   let running = false;
   let generation = 0;
@@ -35,6 +38,8 @@ export function createPoller({
   let inFlight: Promise<void> | null = null;
   let failures = 0;
   let status: NetworkStatus = 'ok';
+  // Sin respuesta todavía o la última traía más pendientes (`again`).
+  let catchingUp = true;
 
   function setStatus(next: NetworkStatus) {
     if (next === status) return;
@@ -57,6 +62,7 @@ export function createPoller({
         const { again } = await task(isCurrent);
         if (!isCurrent()) return;
         failures = 0;
+        catchingUp = again;
         setStatus('ok');
         if (again) delay = 0;
       } catch (error) {
@@ -68,6 +74,8 @@ export function createPoller({
         // El cursor no avanza: se reintenta en el siguiente intervalo (D4).
         failures += 1;
         if (failures >= failuresBeforeWarning) setStatus('reconnecting');
+        // Poniéndose al día, un 503 suelto no debe costar un intervalo entero.
+        else if (catchingUp) delay = catchUpRetryMs;
       }
       schedule(delay, gen);
     })().finally(() => {
@@ -105,15 +113,18 @@ export function createPositionsTask({
   onUpdates,
 }: {
   fetchPositions: (since: number) => Promise<{ cursor: number; updates: PositionUpdate[] }>;
-  onUpdates: (updates: PositionUpdate[]) => void;
+  /** `caughtUp` es `false` mientras queden lotes pendientes del historial. */
+  onUpdates: (updates: PositionUpdate[], caughtUp: boolean) => void;
 }): PollTask {
   let cursor = 0;
   return async (isCurrent) => {
     const response = await fetchPositions(cursor);
     if (!isCurrent()) return { again: false };
     cursor = response.cursor;
-    if (response.updates.length > 0) onUpdates(response.updates);
     // Lote lleno: hay más pendientes, se consulta de inmediato (D5).
-    return { again: response.updates.length >= MAX_BATCH };
+    const again = response.updates.length >= MAX_BATCH;
+    // También con lote vacío: así se sabe cuándo ya está al día.
+    onUpdates(response.updates, !again);
+    return { again };
   };
 }
