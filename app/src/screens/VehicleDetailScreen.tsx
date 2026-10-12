@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AlertItem } from '../components/AlertItem';
 import { CardSkeleton, Skeleton } from '../components/Skeleton';
 import { StatusChip, VehicleIcon } from '../components/VehicleBadges';
+import { VehicleMap } from '../components/VehicleMap';
 import { useVehicleDetail } from '../hooks/useVehicleDetail';
 import { cardinal, formatAgo } from '../lib/positions';
 import type { RootStackParamList } from '../navigation/RootNavigator';
@@ -93,6 +94,8 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
         <CardSkeleton lines={4} />
       ) : (
         <>
+          {position ? <VehicleMap position={position} status={status} /> : null}
+
           <View style={styles.grid}>
             <StatTile
               icon={<MaterialCommunityIcons name="speedometer" size={20} color="#1b5e9c" />}
