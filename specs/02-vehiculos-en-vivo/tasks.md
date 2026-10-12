@@ -21,11 +21,11 @@ Commit: `feat(flota): store de flota y sincronización según el estado de la ap
 
 ## Fase 4 — Lista y navegación
 Commit: `feat(vehiculos): lista de vehículos en vivo`
-- [ ] T09 `npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens`.
-- [ ] T10 `app/src/hooks/useVehicleList.ts` (D7).
-- [ ] T11 `app/src/components/VehicleRow.tsx`, `NetworkBanner.tsx`: "Sin señal", "Sin datos", "Reconectando…".
-- [ ] T12 `app/src/screens/VehiclesScreen.tsx`: `FlatList`, banner, "Salir" en el header.
-- [ ] T13 `app/src/navigation/RootNavigator.tsx` y `app/App.tsx`: `NavigationContainer`.
+- [x] T09 `npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens`.
+- [x] T10 `app/src/hooks/useVehicleList.ts` (D7).
+- [x] T11 `app/src/components/VehicleRow.tsx`, `NetworkBanner.tsx`: "Sin señal", "Sin datos", "Reconectando…".
+- [x] T12 `app/src/screens/VehiclesScreen.tsx`: `FlatList`, banner, "Salir" en el header.
+- [x] T13 `app/src/navigation/RootNavigator.tsx` y `app/App.tsx`: `NavigationContainer`.
 
 ## Verificación manual
 - [ ] 8 vehículos con velocidad y "visto hace X s" actualizándose cada segundo.
