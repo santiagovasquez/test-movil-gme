@@ -6,11 +6,12 @@ import { fleetStore } from '../state/fleetStore';
 import { useSession } from '../state/SessionProvider';
 
 const POSITIONS_INTERVAL_MS = 3000;
+const ALERTS_INTERVAL_MS = 10_000;
 const VEHICLES_RETRY_MS = 3000;
 
 /**
  * Mantiene el store de flota al día mientras haya sesión: carga los vehículos
- * y consulta posiciones solo con la app al frente (HU-3).
+ * y consulta posiciones y alertas solo con la app al frente (HU-3).
  * Al desmontarse (logout o sesión expirada) detiene todo y limpia el store.
  */
 export function useFleetSync(): void {
@@ -31,7 +32,7 @@ export function useFleetSync(): void {
       }
     }
 
-    const poller = createPoller({
+    const positionsPoller = createPoller({
       task: createPositionsTask({
         fetchPositions: api.fetchPositions,
         onUpdates: store.applyPositions,
@@ -39,19 +40,28 @@ export function useFleetSync(): void {
       intervalMs: POSITIONS_INTERVAL_MS,
       onStatusChange: store.setNetwork,
     });
+    // El aviso "Reconectando…" sale solo de posiciones; las alertas reintentan en silencio.
+    const alertsPoller = createPoller({
+      task: async (isCurrent) => {
+        const { items } = await api.fetchAlerts();
+        if (isCurrent()) store.setAlerts(items);
+        return { again: false };
+      },
+      intervalMs: ALERTS_INTERVAL_MS,
+    });
+    const pollers = [positionsPoller, alertsPoller];
 
     loadVehicles();
-    if (AppState.currentState !== 'background') poller.start();
+    if (AppState.currentState !== 'background') pollers.forEach((p) => p.start());
     const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') poller.start();
-      else poller.stop();
+      pollers.forEach((p) => (state === 'active' ? p.start() : p.stop()));
     });
 
     return () => {
       active = false;
       clearTimeout(retryTimer);
       subscription.remove();
-      poller.stop();
+      pollers.forEach((p) => p.stop());
       fleetStore.getState().reset();
     };
   }, [api]);

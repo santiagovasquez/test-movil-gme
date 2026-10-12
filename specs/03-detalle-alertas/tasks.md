@@ -11,8 +11,8 @@ Commit: `feat(alertas): alertas compartidas y marcado optimista como leídas`
 
 ## Fase 2 — Sincronización y contador en la lista
 Commit: `feat(alertas): consultar alertas y mostrar no leídas por vehículo`
-- [ ] T05 `app/src/hooks/useFleetSync.ts`: poller de alertas cada 10 s.
-- [ ] T06 `app/src/hooks/useVehicleList.ts` y `VehicleRow.tsx`: contador `unread`.
+- [x] T05 `app/src/hooks/useFleetSync.ts`: poller de alertas cada 10 s.
+- [x] T06 `app/src/hooks/useVehicleList.ts` y `VehicleRow.tsx`: contador `unread`.
 
 ## Fase 3 — Detalle del vehículo
 Commit: `feat(detalle): detalle del vehículo con su posición y alertas`

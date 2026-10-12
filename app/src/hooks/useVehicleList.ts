@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { unreadCountByVehicle } from '../lib/alerts';
 import type { NetworkStatus } from '../lib/poller';
 import { isStale, secondsSince } from '../lib/positions';
 import { Vehicle } from '../lib/types';
@@ -23,8 +24,10 @@ export function useVehicleList(): {
   const positions = useFleet((s) => s.positions);
   const loading = useFleet((s) => !s.vehiclesLoaded);
   const network = useFleet((s) => s.network);
+  const alerts = useFleet((s) => s.alerts);
   const now = useNow();
 
+  const unread = useMemo(() => unreadCountByVehicle(alerts), [alerts]);
   const rows = useMemo(
     () =>
       vehicles.map((vehicle) => {
@@ -34,11 +37,10 @@ export function useVehicleList(): {
           speedKmh: position ? position.speedKmh : null,
           secondsAgo: position ? secondsSince(position.recordedAt, now) : null,
           stale: position ? isStale(position.recordedAt, now) : false,
-          // Las alertas sin leer llegan con la spec 03.
-          unread: 0,
+          unread: unread[vehicle.id] ?? 0,
         };
       }),
-    [vehicles, positions, now],
+    [vehicles, positions, unread, now],
   );
 
   return { rows, loading, network };
