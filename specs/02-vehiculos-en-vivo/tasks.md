@@ -1,0 +1,34 @@
+# Tareas: Vehículos en vivo
+
+**Diseño**: [design.md](design.md)
+
+## Fase 1 — Posiciones repetidas o atrasadas
+Commit: `fix(posiciones): descartar posiciones repetidas o atrasadas`
+- [ ] T01 `app/src/lib/positions.ts`: `applyUpdates` compara `recordedAt` (D1); agregar `STALE_AFTER_S` e `isStale`.
+- [ ] T02 `app/src/lib/positions.test.ts`: casos nuevos de `design.md` § Pruebas.
+
+## Fase 2 — Poller
+Commit: `feat(polling): consultar posiciones con cursor sin solapes ni pérdidas`
+- [ ] T03 `app/src/lib/poller.ts`: `createPoller` y `createPositionsTask` (D2–D6).
+- [ ] T04 `app/src/lib/poller.test.ts`: casos de `design.md` § Pruebas con timers falsos.
+
+## Fase 3 — Store y sincronización
+Commit: `feat(flota): store de flota y sincronización según el estado de la app`
+- [ ] T05 `npx expo install zustand`.
+- [ ] T06 `app/src/state/fleetStore.ts`: vehículos, posiciones, `network`, `reset()` (D8).
+- [ ] T07 `app/src/hooks/useFleetSync.ts`: carga vehículos, poller de posiciones, `AppState`.
+- [ ] T08 `app/src/hooks/useNow.ts`.
+
+## Fase 4 — Lista y navegación
+Commit: `feat(vehiculos): lista de vehículos en vivo`
+- [ ] T09 `npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens`.
+- [ ] T10 `app/src/hooks/useVehicleList.ts` (D7).
+- [ ] T11 `app/src/components/VehicleRow.tsx`, `NetworkBanner.tsx`: "Sin señal", "Sin datos", "Reconectando…".
+- [ ] T12 `app/src/screens/VehiclesScreen.tsx`: `FlatList`, banner, "Salir" en el header.
+- [ ] T13 `app/src/navigation/RootNavigator.tsx` y `app/App.tsx`: `NavigationContainer`.
+
+## Verificación manual
+- [ ] 8 vehículos con velocidad y "visto hace X s" actualizándose cada segundo.
+- [ ] Algún vehículo pasa a "Sin señal" y vuelve al recuperar señal.
+- [ ] Los `503` del servidor no muestran errores en la app.
+- [ ] Segundo plano 1 min y regreso: datos al día, sin consultas simultáneas en el log del servidor.

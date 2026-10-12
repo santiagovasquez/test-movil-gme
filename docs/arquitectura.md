@@ -15,7 +15,7 @@ app/src/
     http.ts             fetch con timeout, token y reintento tras refrescar
     session.ts          Manejo de tokens y refresh (uno solo a la vez)
     positions.ts        Última posición de cada vehículo, ignorando repetidas o atrasadas
-    poller.ts           Consulta de posiciones cada 3 s con cursor
+    poller.ts           Consultas periódicas sin solaparse (posiciones con cursor, alertas)
     alerts.ts           Alertas sin leer por vehículo
   storage/
     tokenStorage.ts     Guarda el refresh token con expo-secure-store
@@ -50,7 +50,7 @@ poller (cada 3 s) → api → http (token vigente o refresh)
 | Tema | Decisión | Por qué |
 |---|---|---|
 | Navegación | React Navigation (native-stack) | Maneja el botón atrás de Android y funciona en Expo Go |
-| Datos de flota | Zustand | La lista y el detalle comparten alertas, y con selectores cada fila solo se redibuja si cambia su vehículo |
+| Datos de flota | Zustand | La lista y el detalle comparten vehículos, posiciones y alertas; el store se prueba sin React |
 | Sesión | Context | Cambia solo al iniciar o cerrar sesión |
 | Tokens | Refresh en `expo-secure-store`, access solo en memoria | El refresh se mantiene al cerrar la app; el access dura 60 s y se obtiene de nuevo con el refresh |
 | Polling | `setTimeout` encadenado | Nunca hay dos consultas al mismo tiempo, aunque una tarde más de 3 s |
