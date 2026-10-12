@@ -24,7 +24,7 @@ expone el estado de sesión a la app.
 ```ts
 // lib/http.ts
 class ApiError extends Error { status: number }       // status 0 = red o timeout
-function request<T>(path: string, init?: RequestInit, timeoutMs?: number): Promise<T>
+function request<T>(path: string, opts?: { method?; body?; headers? }, timeoutMs?: number): Promise<T>
 function createHttpClient(deps: { session: SessionManager; timeoutMs?: number }):
   { get<T>(path: string): Promise<T>; post<T>(path: string, body?: unknown): Promise<T> }
 
