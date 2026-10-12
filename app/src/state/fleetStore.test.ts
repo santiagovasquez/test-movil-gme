@@ -31,6 +31,20 @@ describe('fleetStore', () => {
     expect(notified).toBe(0);
   });
 
+  it('marca las posiciones como cargadas solo al ponerse al día, aunque el lote venga vacío', () => {
+    fleetStore.getState().applyPositions([position('2026-10-09T15:00:10.000Z', 50)], false);
+    expect(fleetStore.getState().positionsLoaded).toBe(false);
+    fleetStore.getState().applyPositions([], true);
+    expect(fleetStore.getState().positionsLoaded).toBe(true);
+  });
+
+  it('acumula la distancia recorrida de cada vehículo', () => {
+    const { applyPositions } = fleetStore.getState();
+    applyPositions([{ ...position('2026-10-09T15:00:00.000Z', 40), lat: 6.0 }]);
+    applyPositions([{ ...position('2026-10-09T15:00:02.000Z', 40), lat: 6.01 }]);
+    expect(fleetStore.getState().distances['veh-01']).toBeCloseTo(1.11, 1);
+  });
+
   it('reset deja el estado inicial', () => {
     const state = fleetStore.getState();
     state.setVehicles([{ id: 'veh-01', label: 'Camión 01', plate: 'TSM-482', driver: 'Carlos' }]);
@@ -41,7 +55,10 @@ describe('fleetStore', () => {
       vehicles: [],
       vehiclesLoaded: false,
       positions: {},
+      positionsLoaded: false,
+      distances: {},
       network: 'ok',
+      alertsLoaded: false,
     });
   });
 });

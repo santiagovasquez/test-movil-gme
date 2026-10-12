@@ -39,3 +39,53 @@ export function isStale(recordedAt: string, now: number = Date.now()): boolean {
 export function formatAgo(seconds: number): string {
   return seconds < 60 ? `hace ${seconds} s` : `hace ${Math.floor(seconds / 60)} min`;
 }
+
+/** Por debajo de esta velocidad el vehículo se considera detenido. */
+export const STOPPED_BELOW_KMH = 3;
+
+export type VehicleStatus = 'moving' | 'stopped' | 'stale' | 'noData';
+
+export function vehicleStatus(position: PositionUpdate | undefined, now: number = Date.now()): VehicleStatus {
+  if (!position) return 'noData';
+  if (isStale(position.recordedAt, now)) return 'stale';
+  return position.speedKmh < STOPPED_BELOW_KMH ? 'stopped' : 'moving';
+}
+
+/** Distancia en km entre dos posiciones (fórmula del haversine). */
+export function distanceKm(a: Pick<PositionUpdate, 'lat' | 'lng'>, b: Pick<PositionUpdate, 'lat' | 'lng'>): number {
+  const rad = (deg: number) => (deg * Math.PI) / 180;
+  const dLat = rad(b.lat - a.lat);
+  const dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
+/**
+ * Suma a cada vehículo la distancia entre su última posición y las nuevas,
+ * con la misma regla que `applyUpdates`: las repetidas o atrasadas no cuentan.
+ * Llamar con las posiciones de antes de aplicar el lote.
+ */
+export function trackDistances(
+  current: PositionsByVehicle,
+  distances: Record<string, number>,
+  updates: PositionUpdate[],
+): Record<string, number> {
+  let next: Record<string, number> | null = null;
+  const last: PositionsByVehicle = { ...current };
+  for (const update of updates) {
+    const known = last[update.vehicleId];
+    if (known && Date.parse(update.recordedAt) <= Date.parse(known.recordedAt)) continue;
+    last[update.vehicleId] = update;
+    if (!known) continue;
+    next ??= { ...distances };
+    next[update.vehicleId] = (next[update.vehicleId] ?? 0) + distanceKm(known, update);
+  }
+  return next ?? distances;
+}
+
+const CARDINALS = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+
+/** Rumbo en grados a punto cardinal (N, NE, E…). */
+export function cardinal(heading: number): string {
+  return CARDINALS[Math.round((((heading % 360) + 360) % 360) / 45) % 8];
+}

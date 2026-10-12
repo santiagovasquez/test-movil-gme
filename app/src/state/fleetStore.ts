@@ -3,19 +3,25 @@ import { createStore } from 'zustand/vanilla';
 import { applyPendingReads } from '../lib/alerts';
 import { ApiError } from '../lib/http';
 import type { NetworkStatus } from '../lib/poller';
-import { applyUpdates, PositionsByVehicle } from '../lib/positions';
+import { applyUpdates, PositionsByVehicle, trackDistances } from '../lib/positions';
 import { Alert, PositionUpdate, Vehicle } from '../lib/types';
 
 interface FleetState {
   vehicles: Vehicle[];
   vehiclesLoaded: boolean;
   positions: PositionsByVehicle;
+  /** Ya se recorrió el historial de posiciones: los datos están al día. */
+  positionsLoaded: boolean;
+  /** Km recorridos por vehículo según las posiciones recibidas. */
+  distances: Record<string, number>;
   network: NetworkStatus;
   alerts: Alert[];
+  /** Ya llegó la primera respuesta de alertas. */
+  alertsLoaded: boolean;
   /** Alertas con `POST /read` en curso. */
   pendingReads: Set<string>;
   setVehicles(vehicles: Vehicle[]): void;
-  applyPositions(updates: PositionUpdate[]): void;
+  applyPositions(updates: PositionUpdate[], caughtUp?: boolean): void;
   setNetwork(network: NetworkStatus): void;
   /** Reemplaza las alertas respetando las que se están marcando como leídas (D2). */
   setAlerts(items: Alert[]): void;
@@ -29,8 +35,11 @@ const initialState = () => ({
   vehicles: [] as Vehicle[],
   vehiclesLoaded: false,
   positions: {} as PositionsByVehicle,
+  positionsLoaded: false,
+  distances: {} as Record<string, number>,
   network: 'ok' as NetworkStatus,
   alerts: [] as Alert[],
+  alertsLoaded: false,
   pendingReads: new Set<string>(),
 });
 
@@ -55,13 +64,17 @@ export const fleetStore = createStore<FleetState>()((set, get) => {
   return {
     ...initialState(),
     setVehicles: (vehicles) => set({ vehicles, vehiclesLoaded: true }),
-    applyPositions: (updates) =>
+    applyPositions: (updates, caughtUp = true) =>
       set((state) => {
         const positions = applyUpdates(state.positions, updates);
-        return positions === state.positions ? state : { positions };
+        const positionsLoaded = state.positionsLoaded || caughtUp;
+        if (positions === state.positions && positionsLoaded === state.positionsLoaded) return state;
+        const distances = trackDistances(state.positions, state.distances, updates);
+        return { positions, positionsLoaded, distances };
       }),
     setNetwork: (network) => set({ network }),
-    setAlerts: (items) => set((state) => ({ alerts: applyPendingReads(items, state.pendingReads) })),
+    setAlerts: (items) =>
+      set((state) => ({ alerts: applyPendingReads(items, state.pendingReads), alertsLoaded: true })),
 
     async markAlertRead(id, send) {
       const current = get().alerts.find((alert) => alert.id === id);
