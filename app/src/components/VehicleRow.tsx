@@ -1,13 +1,18 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { VehicleRowModel } from '../hooks/useVehicleList';
+import { formatAgo } from '../lib/positions';
 
-function formatAgo(seconds: number): string {
-  return seconds < 60 ? `hace ${seconds} s` : `hace ${Math.floor(seconds / 60)} min`;
+interface Props extends VehicleRowModel {
+  onPress(): void;
 }
 
-export function VehicleRow({ vehicle, speedKmh, secondsAgo, stale, unread }: VehicleRowModel) {
+export function VehicleRow({ vehicle, speedKmh, secondsAgo, stale, unread, onPress }: Props) {
   return (
-    <View style={styles.row}>
+    <Pressable
+      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      onPress={onPress}
+      accessibilityRole="button"
+    >
       <View style={styles.main}>
         <Text style={styles.label}>{vehicle.label}</Text>
         <Text style={styles.detail}>
@@ -30,7 +35,7 @@ export function VehicleRow({ vehicle, speedKmh, secondsAgo, stale, unread }: Veh
           </Text>
         ) : null}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -42,6 +47,7 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 12,
   },
+  pressed: { opacity: 0.7 },
   main: { flex: 1, gap: 4 },
   side: { alignItems: 'flex-end', gap: 4 },
   label: { fontSize: 16, fontWeight: '600', color: '#1f2933' },

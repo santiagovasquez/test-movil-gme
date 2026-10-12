@@ -34,3 +34,8 @@ export function secondsSince(recordedAt: string, now: number = Date.now()): numb
 export function isStale(recordedAt: string, now: number = Date.now()): boolean {
   return secondsSince(recordedAt, now) > STALE_AFTER_S;
 }
+
+/** "hace 12 s" o, desde un minuto, "hace 3 min". */
+export function formatAgo(seconds: number): string {
+  return seconds < 60 ? `hace ${seconds} s` : `hace ${Math.floor(seconds / 60)} min`;
+}

@@ -2,12 +2,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 import { useFleetSync } from '../hooks/useFleetSync';
 import { LoginScreen } from '../screens/LoginScreen';
+import { VehicleDetailScreen } from '../screens/VehicleDetailScreen';
 import { VehiclesScreen } from '../screens/VehiclesScreen';
 import { useSession } from '../state/SessionProvider';
 
 export type RootStackParamList = {
   Login: undefined;
   Vehicles: undefined;
+  VehicleDetail: { vehicleId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -36,14 +38,21 @@ export function RootNavigator() {
       {status === 'signedIn' ? <FleetSync /> : null}
       <Stack.Navigator>
         {status === 'signedIn' ? (
-          <Stack.Screen
-            name="Vehicles"
-            component={VehiclesScreen}
-            options={{
-              title: user ? `Hola, ${user.name.split(' ')[0]}` : 'Vehículos',
-              headerRight: () => <LogoutButton />,
-            }}
-          />
+          <>
+            <Stack.Screen
+              name="Vehicles"
+              component={VehiclesScreen}
+              options={{
+                title: user ? `Hola, ${user.name.split(' ')[0]}` : 'Vehículos',
+                headerRight: () => <LogoutButton />,
+              }}
+            />
+            <Stack.Screen
+              name="VehicleDetail"
+              component={VehicleDetailScreen}
+              options={{ title: 'Vehículo' }}
+            />
+          </>
         ) : (
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         )}

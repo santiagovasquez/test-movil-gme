@@ -16,10 +16,10 @@ Commit: `feat(alertas): consultar alertas y mostrar no leídas por vehículo`
 
 ## Fase 3 — Detalle del vehículo
 Commit: `feat(detalle): detalle del vehículo con su posición y alertas`
-- [ ] T07 `app/src/hooks/useVehicleDetail.ts` (D4–D5).
-- [ ] T08 `app/src/components/AlertItem.tsx`: leída / sin leer, botón "Marcar como leída".
-- [ ] T09 `app/src/screens/VehicleDetailScreen.tsx`: datos, última posición, alertas, estados vacíos.
-- [ ] T10 `app/src/navigation/RootNavigator.tsx` y `VehiclesScreen.tsx`: ruta `VehicleDetail` al tocar una fila.
+- [x] T07 `app/src/hooks/useVehicleDetail.ts` (D4–D5).
+- [x] T08 `app/src/components/AlertItem.tsx`: leída / sin leer, botón "Marcar como leída".
+- [x] T09 `app/src/screens/VehicleDetailScreen.tsx`: datos, última posición, alertas, estados vacíos.
+- [x] T10 `app/src/navigation/RootNavigator.tsx` y `VehiclesScreen.tsx`: ruta `VehicleDetail` al tocar una fila.
 
 ## Verificación manual
 - [ ] Tocar un vehículo abre su detalle; el back de Android vuelve a la lista.

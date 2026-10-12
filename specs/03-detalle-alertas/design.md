@@ -45,7 +45,7 @@ useVehicleDetail(vehicleId: string): {
 - **D2**: `setAlerts` aplica `pendingReads` sobre la respuesta de `GET /alerts` — *por qué*: una consulta que sale antes del `POST` traería `read: false` y desharía el cambio.
 - **D3**: Fallo del `POST` revierte la alerta a sin leer y `ToastAndroid` muestra "No se pudo marcar la alerta"; `404` la retira del store — *por qué*: el estado visible siempre coincide con el servidor.
 - **D4**: Las alertas del detalle salen del store filtradas por `vehicleId`, sin `GET /alerts?vehicleId` — *por qué*: el store ya las tiene y se mantienen actualizadas cada 10 s.
-- **D5**: El detalle reutiliza `isStale`, `secondsSince` y `useNow` de la spec 02 — *por qué*: la lista y el detalle muestran el mismo "visto hace X s".
+- **D5**: El detalle reutiliza `isStale`, `secondsSince`, `formatAgo` y `useNow` de la spec 02 — *por qué*: la lista y el detalle muestran el mismo "visto hace X s".
 
 ## Pruebas
 - `alerts.test.ts`: conteo por vehículo ignora leídas; `applyPendingReads` fuerza `read: true` solo en ids pendientes.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyUpdates, isStale, secondsSince } from './positions';
+import { applyUpdates, formatAgo, isStale, secondsSince } from './positions';
 import { PositionUpdate } from './types';
 
 const position = (vehicleId: string, recordedAt: string, speedKmh = 30): PositionUpdate => ({
@@ -89,5 +89,16 @@ describe('secondsSince', () => {
   it('nunca devuelve valores negativos', () => {
     const now = new Date('2026-10-09T15:00:00.000Z').getTime();
     expect(secondsSince('2026-10-09T15:00:05.000Z', now)).toBe(0);
+  });
+});
+
+describe('formatAgo', () => {
+  it('usa segundos por debajo de un minuto', () => {
+    expect(formatAgo(59)).toBe('hace 59 s');
+  });
+
+  it('usa minutos desde un minuto', () => {
+    expect(formatAgo(60)).toBe('hace 1 min');
+    expect(formatAgo(185)).toBe('hace 3 min');
   });
 });
