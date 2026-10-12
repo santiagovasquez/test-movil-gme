@@ -23,9 +23,17 @@ export interface Alert {
   read: boolean;
 }
 
-export interface Session {
+export interface User {
+  name: string;
+  email: string;
+}
+
+export interface TokenResponse {
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
-  user: { name: string; email: string };
+}
+
+export interface LoginResponse extends TokenResponse {
+  user: User;
 }

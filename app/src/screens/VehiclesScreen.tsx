@@ -1,17 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Session } from '../lib/types';
+import { useSession } from '../state/SessionProvider';
 
-interface Props {
-  session: Session;
-  onLogout: () => void;
-}
-
-export function VehiclesScreen({ session, onLogout }: Props) {
+export function VehiclesScreen() {
+  const { user, logout } = useSession();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Hola, {session.user.name}</Text>
-        <Pressable onPress={onLogout}>
+        <Text style={styles.title}>Hola, {user?.name}</Text>
+        <Pressable onPress={logout}>
           <Text style={styles.link}>Salir</Text>
         </Pressable>
       </View>

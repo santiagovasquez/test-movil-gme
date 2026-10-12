@@ -9,15 +9,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { login } from '../lib/api';
-import { Session } from '../lib/types';
+import { useSession } from '../state/SessionProvider';
 
-interface Props {
-  onLoggedIn: (session: Session) => void;
-  notice?: string;
-}
-
-export function LoginScreen({ onLoggedIn, notice }: Props) {
+export function LoginScreen() {
+  const { login, notice } = useSession();
   const [email, setEmail] = useState('supervisor@gme.co');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,10 +22,10 @@ export function LoginScreen({ onLoggedIn, notice }: Props) {
     setLoading(true);
     setError(null);
     try {
-      onLoggedIn(await login(email.trim(), password));
+      // Si el login funciona, la pantalla se desmonta: no tocar su estado (D7).
+      await login(email.trim(), password);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo iniciar sesión');
-    } finally {
       setLoading(false);
     }
   }
