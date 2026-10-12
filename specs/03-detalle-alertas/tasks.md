@@ -4,10 +4,10 @@
 
 ## Fase 1 — Alertas en el store
 Commit: `feat(alertas): alertas compartidas y marcado optimista como leídas`
-- [ ] T01 `app/src/lib/alerts.ts`: `unreadCountByVehicle`, `applyPendingReads`.
-- [ ] T02 `app/src/lib/alerts.test.ts`.
-- [ ] T03 `app/src/state/fleetStore.ts`: `alerts`, `pendingReads`, `setAlerts`, `markAlertRead` (D1–D3).
-- [ ] T04 `app/src/state/fleetStore.test.ts`: casos de `design.md` § Pruebas.
+- [x] T01 `app/src/lib/alerts.ts`: `unreadCountByVehicle`, `applyPendingReads`.
+- [x] T02 `app/src/lib/alerts.test.ts`.
+- [x] T03 `app/src/state/fleetStore.ts`: `alerts`, `pendingReads`, `setAlerts`, `markAlertRead` (D1–D3).
+- [x] T04 `app/src/state/fleetStore.test.ts`: casos de `design.md` § Pruebas.
 
 ## Fase 2 — Sincronización y contador en la lista
 Commit: `feat(alertas): consultar alertas y mostrar no leídas por vehículo`

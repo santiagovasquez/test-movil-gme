@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PositionUpdate } from '../lib/types';
+import { ApiError } from '../lib/http';
+import { Alert, PositionUpdate } from '../lib/types';
 import { fleetStore } from './fleetStore';
 
 const position = (recordedAt: string, speedKmh: number): PositionUpdate => ({
@@ -42,5 +43,72 @@ describe('fleetStore', () => {
       positions: {},
       network: 'ok',
     });
+  });
+});
+
+const alert = (id: string, read = false): Alert => ({
+  id,
+  vehicleId: 'veh-01',
+  type: 'overspeed',
+  message: 'Exceso de velocidad',
+  createdAt: '2026-10-09T15:03:58.020Z',
+  read,
+});
+
+/** Promesa que se resuelve o rechaza desde el test. */
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (error: unknown) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
+const readOf = (id: string) => fleetStore.getState().alerts.find((a) => a.id === id)?.read;
+
+describe('markAlertRead', () => {
+  beforeEach(() => fleetStore.getState().setAlerts([alert('al-1'), alert('al-2')]));
+
+  it('marca la alerta al instante y la confirma con el servidor', async () => {
+    const post = deferred<Alert>();
+    const result = fleetStore.getState().markAlertRead('al-1', () => post.promise);
+    expect(readOf('al-1')).toBe(true);
+
+    post.resolve(alert('al-1', true));
+    expect(await result).toBe('ok');
+    expect(readOf('al-1')).toBe(true);
+    expect(fleetStore.getState().pendingReads.size).toBe(0);
+  });
+
+  it('si el envío falla vuelve a "sin leer"', async () => {
+    const result = await fleetStore
+      .getState()
+      .markAlertRead('al-1', () => Promise.reject(new ApiError(0, 'Sin conexión')));
+    expect(result).toBe('failed');
+    expect(readOf('al-1')).toBe(false);
+    expect(fleetStore.getState().pendingReads.size).toBe(0);
+  });
+
+  it('con 404 retira la alerta', async () => {
+    const result = await fleetStore
+      .getState()
+      .markAlertRead('al-1', () => Promise.reject(new ApiError(404, 'No existe')));
+    expect(result).toBe('ok');
+    expect(fleetStore.getState().alerts.map((a) => a.id)).toEqual(['al-2']);
+  });
+
+  it('una consulta de alertas durante el envío no revierte el cambio', async () => {
+    const post = deferred<Alert>();
+    const result = fleetStore.getState().markAlertRead('al-1', () => post.promise);
+
+    fleetStore.getState().setAlerts([alert('al-1'), alert('al-2')]);
+    expect(readOf('al-1')).toBe(true);
+    expect(readOf('al-2')).toBe(false);
+
+    post.resolve(alert('al-1', true));
+    await result;
+    expect(readOf('al-1')).toBe(true);
   });
 });
