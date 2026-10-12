@@ -1,0 +1,127 @@
+/* Valores tomados de los StyleSheet de app/src/components y app/src/screens. */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #1f2933; background: #f5f7fa; }
+p { margin: 0; }
+button { font: inherit; cursor: pointer; }
+.icon { flex-shrink: 0; display: block; }
+.icon-button { background: none; border: 0; padding: 4px; display: flex; border-radius: 8px; }
+.icon-button:hover { background: #eef2f7; }
+.error { color: #c62828; }
+.notice { background: #fff4e5; color: #8a4b00; padding: 10px; border-radius: 8px; }
+.empty { font-size: 14px; color: #7b8794; text-align: center; }
+.section-title { font-size: 16px; font-weight: 700; }
+
+/* Login (LoginScreen + Logo) */
+.login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-card { width: 100%; max-width: 380px; background: #fff; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.logo { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 8px; }
+.logo-badge { width: 68px; height: 68px; border-radius: 20px; background: #1b5e9c; display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+.logo-name { font-size: 24px; font-weight: 700; }
+.logo-tagline { font-size: 14px; color: #616e7c; }
+.input { border: 1px solid #cbd2d9; border-radius: 8px; padding: 10px 12px; font-size: 16px; font-family: inherit; }
+.input:focus-within { outline: 2px solid #b9d0e6; }
+.password-row { display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; }
+.password-row input { flex: 1; border: 0; outline: 0; padding: 10px 0; font: inherit; }
+.primary { background: #1b5e9c; color: #fff; border: 0; border-radius: 8px; padding: 12px; font-weight: 600; font-size: 16px; margin-top: 4px; display: flex; justify-content: center; }
+.primary:disabled { cursor: default; }
+.spinner { width: 19px; height: 19px; border: 2px solid #ffffff55; border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Barra superior (cabecera + perfil del SideMenu) */
+.topbar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px 20px; box-shadow: 0 1px 4px rgba(31, 41, 51, 0.08); }
+.brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
+.brand-badge { width: 32px; height: 32px; border-radius: 10px; background: #1b5e9c; display: flex; align-items: center; justify-content: center; }
+.profile { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 36px; height: 36px; border-radius: 18px; background: #1b5e9c; color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.profile-text { display: flex; flex-direction: column; }
+.profile-name { font-size: 14px; font-weight: 700; }
+.profile-email { font-size: 12px; color: #7b8794; }
+.banner { background: #fff4e5; color: #8a4b00; text-align: center; padding: 6px; font-size: 13px; }
+
+/* Distribución: lista a la izquierda, detalle a la derecha */
+.layout { display: grid; grid-template-columns: minmax(340px, 460px) 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 16px; align-items: start; }
+.list, .detail-content { display: flex; flex-direction: column; gap: 10px; }
+.detail { position: sticky; top: 72px; }
+.page-title { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+.placeholder { padding: 48px 16px; }
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+  .detail { position: static; }
+  .profile-text { display: none; }
+}
+
+/* Tarjetas (VehicleRow, sombra de la app) */
+.card { background: #fff; border-radius: 16px; padding: 14px; box-shadow: 0 2px 8px rgba(31, 41, 51, 0.06); }
+.vehicle-card { display: block; width: 100%; border: 2px solid transparent; text-align: left; color: inherit; }
+.vehicle-card:hover { opacity: 0.85; }
+.vehicle-card.selected { border-color: #b9d0e6; }
+.card-top { display: flex; align-items: center; gap: 12px; }
+.vehicle-icon { border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.titles { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.title-line { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.vehicle-label { font-size: 16px; font-weight: 700; }
+.subtitle { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.plate { font-size: 11px; font-weight: 700; color: #334e68; background: #eef2f7; padding: 1px 6px; border-radius: 4px; letter-spacing: 0.5px; margin-right: 4px; white-space: nowrap; }
+.driver { font-size: 13px; color: #616e7c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.divider { height: 1px; background: #eef2f7; margin: 12px 0; }
+.metrics { display: flex; align-items: center; gap: 14px; }
+.metric { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: #334e68; }
+.unread { margin-left: auto; display: flex; align-items: center; gap: 3px; background: #fff1e6; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 700; color: #c05621; }
+
+/* StatusChip */
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; align-self: flex-start; }
+.dot { width: 6px; height: 6px; border-radius: 3px; }
+
+/* FleetSummaryBar */
+.summary { display: flex; gap: 8px; margin-bottom: 4px; }
+.tile { flex: 1; background: #fff; border-radius: 14px; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 2px; box-shadow: 0 1px 6px rgba(31, 41, 51, 0.05); }
+.tile-top { display: flex; align-items: center; gap: 5px; }
+.tile-value { font-size: 18px; font-weight: 800; }
+.tile-label { font-size: 11px; color: #7b8794; font-weight: 600; }
+
+/* Skeleton */
+.skeleton { background: #e4e7eb; border-radius: 6px; animation: pulse 1.2s ease-in-out infinite; }
+.alert-skeleton { height: 72px; border-radius: 12px; }
+@keyframes pulse { 50% { opacity: 0.5; } }
+
+/* Detalle (VehicleDetailScreen) */
+.hero { display: flex; align-items: center; gap: 14px; padding: 16px; }
+.hero-text { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.hero-title { font-size: 20px; font-weight: 800; }
+.hero .plate { font-size: 12px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-tile { display: flex; flex-direction: column; gap: 4px; }
+.stat-icon { width: 34px; height: 34px; border-radius: 10px; background: #e8f0f8; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.stat-label { font-size: 12px; font-weight: 600; color: #7b8794; }
+.stat-value { font-size: 18px; font-weight: 800; }
+.stat-unit { font-size: 13px; font-weight: 600; color: #7b8794; }
+.location { display: flex; flex-direction: column; gap: 8px; }
+.card-title { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.field { display: flex; justify-content: space-between; }
+.field-label { font-size: 14px; color: #616e7c; }
+.field-value { font-size: 14px; font-weight: 600; }
+.alerts-header { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.unread-pill { background: #fff1e6; padding: 3px 9px; border-radius: 12px; font-size: 12px; font-weight: 700; color: #c05621; }
+.no-alerts { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 0; }
+
+/* VehicleMap */
+.map { height: 220px; border-radius: 16px; border: 2px solid; overflow: hidden; background: #e4e7eb; z-index: 0; }
+.pin { width: 30px; height: 30px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35); display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+.pin svg { width: 16px; height: 16px; }
+
+/* AlertItem */
+.alert { background: #fff; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; border-left: 4px solid; }
+.alert.unread { border-left-color: #e67e22; }
+.alert.read { border-left-color: #2e9e5b; }
+.alert-message { font-size: 15px; font-weight: 600; }
+.alert.read .alert-message { font-weight: 400; color: #616e7c; }
+.alert-footer { display: flex; justify-content: space-between; align-items: center; }
+.meta { font-size: 12px; color: #7b8794; }
+.action { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 14px; border: 1px solid #b9d0e6; background: none; font-size: 13px; font-weight: 600; color: #1b5e9c; }
+.action:hover { background: #e8f0f8; }
+.read-badge { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 14px; background: #e6f6ec; font-size: 13px; font-weight: 600; color: #2e9e5b; }
+.read-badge.pop { animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes pop { from { transform: scale(0.3); opacity: 0.3; } }
+
+/* Toast (ToastAndroid en la app) */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #323f4b; color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 14px; }

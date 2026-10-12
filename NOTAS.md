@@ -23,6 +23,12 @@ EXPO_PUBLIC_API_URL=http://10.0.2.2:4000 npx expo start --android
 En el emulador Android, `10.0.2.2` es el computador. En un teléfono físico
 se usa la IP local del computador.
 
+**Web (opcional):**
+
+```bash
+cd web && npm install && npm run dev   # http://localhost:5173
+```
+
 **Expo Go debe ser compatible con SDK 57.** Expo Go avisa que su próxima
 versión solo abrirá proyectos SDK 58. Si la versión de la tienda ya no abre
 el proyecto, hay que instalar la de SDK 57 desde
@@ -64,6 +70,10 @@ Cada parte tiene su spec en `specs/` y la estructura está en `docs/arquitectura
   recorrido. Necesita internet para las teselas.
 - **Marcar como leída:** la alerta cambia al instante. Si el servidor falla,
   vuelve a "sin leer" y aparece un aviso; si responde `404`, se retira.
+- **Web:** `web/` (Vite + React) usa la misma lógica de `app/src/lib`, sin
+  copiarla. Solo cambia dónde se guardan los tokens (`localStorage`) y cómo
+  se pausa el polling (al ocultar la pestaña). El diseño se rehízo en CSS
+  porque los componentes de React Native no corren en el navegador.
 
 La lógica está en `app/src/lib`, sin React, y tiene pruebas con Vitest.
 
@@ -99,7 +109,6 @@ La lógica está en `app/src/lib`, sin React, y tiene pruebas con Vitest.
   durante 2 minutos. La app hace un solo refresh a la vez, pero no puede
   evitarlo sola porque el token es de un solo uso. Lo resolvería en el
   servidor, aceptando el token anterior durante unos segundos tras rotarlo.
-- La página web opcional reutilizando `app/src/lib`.
 - Mejorar el diseño pensando en la usabilidad para el supervisor.
 - Probar en más dispositivos reales, usando la app en vertical y en horizontal.
 - Medir el rendimiento de las pantallas (tiempos de carga, renders lentos,
@@ -124,6 +133,9 @@ La lógica está en `app/src/lib`, sin React, y tiene pruebas con Vitest.
     funcionaba sin configurar nada. En el teléfono el mapa quedó en blanco; el
     log de Android mostraba "Authorization failure" de Google Maps. Se cambió
     a Leaflet con OpenStreetMap en un WebView.
+  - En la web, la primera forma de leer la URL del API funcionaba en el
+    build pero fallaba en `npm run dev`. Se cambió por un `config.ts` propio
+    de la web.
   - Una prueba con timers falsos usaba `advanceTimersByTimeAsync(0)`, que no
     ejecuta los `setTimeout(0)` encadenados. La prueba fallaba aunque el
     código estaba bien: un recordatorio de que una prueba roja no siempre
